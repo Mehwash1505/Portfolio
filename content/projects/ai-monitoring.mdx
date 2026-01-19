@@ -1,0 +1,89 @@
+---
+title: AI Monitoring Dashboard
+---
+
+## Problem
+
+Modern AI systems often fail silently in production. Logs capture errors,
+but they do not surface model drift, latency regression, or confidence collapse.
+
+## Constraints
+
+- Must support real-time updates
+- Cannot rely on client-side polling
+- Needs to scale across multiple deployed models
+- UI must remain responsive under high update frequency
+
+## System Architecture
+
+<div className="my-8">
+  <img
+    src="/diagrams/ai-monitoring-architecture.svg"
+    alt="High-level architecture of the AI monitoring dashboard"
+    className="mx-auto max-w-3xl rounded-lg border border-neutral-800"
+  />
+</div>
+
+The system is structured around a real-time data pipeline where model telemetry
+is streamed through a WebSocket gateway and rendered incrementally on the frontend.
+
+Separating the data ingestion layer from the visualization layer allows the UI
+to remain responsive even under sustained update frequency.
+
+## Where Things Started Breaking
+
+The first moment of friction came much earlier than expected.
+
+Before any application logic failed, the system itself began to feel
+unreliable. Imports that looked correct refused to resolve. Files existed,
+paths matched, yet errors persisted.
+
+This was not a clear failure. It was ambiguous.  
+And ambiguity is far more stressful than a visible bug.
+
+At that point, I started feeling lost because evrything I did, failed badly.
+
+## Architecture Decisions
+
+The frontend is built using Next.js App Router with a strict separation between
+server-rendered structural content and client-side visualization layers.
+
+Real-time updates are streamed via WebSockets and reconciled locally to avoid
+full re-renders and unnecessary layout recalculations.
+
+## State Management
+
+Instead of using a global store, each visualization component owns localized
+state derived from the incoming stream.
+
+This prevents cascading re-renders and keeps update latency predictable under load.
+
+## Performance Considerations
+
+- No client-side polling
+- Memoized chart layers
+- Batched state updates
+- Progressive hydration for non-critical UI
+
+## Trade-offs
+
+Using WebSockets increased operational complexity and required additional
+infrastructure monitoring, but it significantly reduced latency and backend load
+compared to REST-based polling.
+
+## WebSocket Subscription Logic
+
+```ts
+type Message = {
+  latency: number
+  confidence: number
+}
+
+function subscribeToModel(id: string) {
+  const socket = new WebSocket(`/ws/models/${id}`)
+
+  socket.onmessage = (event) => {
+    const data: Message = JSON.parse(event.data)
+    updateChart(data)
+  }
+}
