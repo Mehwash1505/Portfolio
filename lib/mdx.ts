@@ -3,7 +3,7 @@ import path from "path"
 import { compileMDX } from "next-mdx-remote/rsc"
 import rehypePrettyCode from "rehype-pretty-code"
 
-const ROOT = process.cwd()
+const ROOT = process.cwd() 
 
 export async function getProjectBySlug(slug: string) {
   const filePath = path.join(ROOT, "content/projects", `${slug}.mdx`)
