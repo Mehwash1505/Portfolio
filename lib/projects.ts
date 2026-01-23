@@ -5,7 +5,7 @@ export type ProjectMeta = {
   tech: string[]
 }
 
-export const projects: ProjectMeta[] = [
+export const projects: ProjectMeta[] = [ 
   {
     slug: "ai-monitoring",
     title: "AI Monitoring Dashboard",
