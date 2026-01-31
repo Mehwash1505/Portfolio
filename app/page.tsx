@@ -1,3 +1,4 @@
+// app/page.tsx
 import FadeIn from "../components/motion/FadeIn"
 import Container from "../components/ui/Container"
 
