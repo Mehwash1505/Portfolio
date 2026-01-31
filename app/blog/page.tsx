@@ -1,3 +1,4 @@
+// app/blog/page.tsx
 import { getAllPosts } from "../../lib/blog" 
 import Container from "../../components/ui/Container"
 import BlogList from "./BlogList"
