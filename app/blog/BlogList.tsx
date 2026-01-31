@@ -1,3 +1,5 @@
+// app/blog/BlogList.tsx
+
 "use client"
 
 import FadeIn from "../../components/motion/FadeIn"
